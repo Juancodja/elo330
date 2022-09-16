@@ -9,17 +9,13 @@ for element in ${array[@]}
 do echo $element
 done
 
-text=`<sometext.txt`
-echo $text
 
 echo 
 echo
 
-until ! read -r -a array
+until ! read -r -a array2
 do for element in ${array[@]}
     do echo $element
     done
     echo "---line finished"
-done < sometext.txt 
-echo ${array[@]}
-
+done < last.txt
