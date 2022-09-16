@@ -1,28 +1,32 @@
 #/bin/sh
 
 tmpfile="/tmp/f$$"
-last -w -n 100 > $tmpfile
-
-#mision 1, seperar tld
+last -w > $tmpfile # Store the result of last in a temp file
 
 
-declare -A tldcount
+declare -A tldcount # Declare a hash dict like object
 
-until ! read -r -a line
+until ! read -r -a line 
     do
-        IFS="." read -a tld <<< ${line[2]}
-        if [ ${#tld} -gt 0 ]
-            then
-            if [ ! -v tldcount[${tld[-1]}] ]
+        IFS="." read -a tld <<< ${line[2]} # Strip the ip line and get the TLD
+        if [ ${#tld[@]} -gt 1 ]
+        then
+            if [[ ! tldcount[${tld[-1]}] =~ [0-9] ]]
+            then    
+                if [ ! -v tldcount[${tld[-1]}] ]
                 then
-                    let tldcount[${tld[-1]}]++
+                        let tldcount[${tld[-1]}]++
+                fi
             fi
         fi
     done < $tmpfile
 
-for key in "${!tldcount[@]}"; do
-    echo "$key ${tldcount[$key]}"
-done
+rm $tmpfile  #Clear the temp file
 
+for key in "${!tldcount[@]}"; do # Save the count in the temp file and sort the result
+    echo "${tldcount[$key]} $key " >> $tmpfile
+done
+sort -r $tmpfile
 
 rm $tmpfile
+
