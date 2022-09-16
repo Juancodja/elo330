@@ -1,21 +1,11 @@
 #/bin/sh
 
-variable=${1:-`pwd`}
-echo $variable
+VAR="ALPHANUMER"
+
+if [[ $VAR =~ [0-9] ]]
+then echo hola
+else echo chao
+fi
 
 
-
-for element in ${array[@]}
-do echo $element
-done
-
-
-echo 
-echo
-
-until ! read -r -a array2
-do for element in ${array[@]}
-    do echo $element
-    done
-    echo "---line finished"
-done < last.txt
+echo [0-9]
