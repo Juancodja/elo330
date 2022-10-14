@@ -20,7 +20,7 @@ int main(int argc, char *argv[]){
     int fd, n = 1, i, m= 0;
     int N = atoi(argv[2]);
     void* memptr;
-    const SIZE = 524288;
+    const int SIZE = 524288;
     const char *nameEmpty = "/sempaforo_vacio";
     const char *nameFull = "/semaforo_lleno";
     sem_t * empty_sem, *full_sem;

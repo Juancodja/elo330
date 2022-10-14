@@ -2,3 +2,8 @@ t1/samplefolder
 *.txt
 *.gz
 *.zip
+*.o
+pfifo
+cfifo 
+mshmem
+pshmem

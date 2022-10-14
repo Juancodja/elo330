@@ -21,6 +21,7 @@ int main(int argc, char *argv[]){
     int to_be_read = 2*sizeof(int);
 
     const char* name = argv[1];
+    usleep(200);
     
     fd = open(name, O_WRONLY);
     

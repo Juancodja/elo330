@@ -30,7 +30,7 @@ int main(int argc, char *argv[]){
     int fd, n = 2, sum = 0, i, m = 0;
     int N = atoi(argv[2]);
     void *memptr;
-    const SIZE = 524288;
+    const int SIZE = 524288;
     const char *nameEmpty = "/sempaforo_vacio";
     const char *nameFull = "/semaforo_lleno";
     sem_t * empty_sem, *full_sem;
@@ -95,18 +95,13 @@ int main(int argc, char *argv[]){
     rates[calls] = sizeof(int)*(sum_read-prev_sum_read);
     calls++;
     
-    printf("\nSuma = %i\n", sum);
+    //printf("\nSuma = %i\n", sum);
 
-    for(i = 0 ; i < calls/5 ; i++){
-        for(n=0 ; n < 5; n++){
-            printf("%i ", rates[5*i+n]);
-        }
-        printf("\n");
+    printf("#interval\tbit\n");
+    for(i=0 ; i < calls ; i++){
+        printf("%i\t%i \n", 100*i, 10*rates[i]);
     }
-    for(n=i*5 ; n < calls ; n++){
-        printf("%i ", rates[n]);
-    }
-    printf("\n");
+
 
 
     sem_close(empty_sem);

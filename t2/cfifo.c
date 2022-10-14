@@ -53,17 +53,12 @@ int main(int argc, char *argv[]){
     rates[calls] = sum_read-prev_sum_read;
     calls++;
     //printf("buff[0] = %i\n", buff[0]);
-    printf("\nSuma = %i\n", sum);
+    //printf("\nSuma = %i\n", sum);
 
+    printf("#interval\tbit\n");
     int i;
-    for(i = 0 ; i < calls/5 ; i++){
-        for(n=0 ; n < 5; n++){
-            printf("%i ", rates[5*i+n]);
-        }
-        printf("\n");
-    }
-    for(n=i*5 ; n < calls ; n++){
-        printf("%i ", rates[n]);
+    for(i = 0 ; i < calls; i++){
+        printf("%i\t%i\n", 100*i, 10*rates[i]);
     }
     printf("\n");
 
