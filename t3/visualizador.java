@@ -6,8 +6,21 @@ import java.net.Socket;
 
 class visualizador{
     public static void main(String[] args)throws IOException{
+
+        String hostname = "localhost"; 
+        int portnumber = 47201;
+
+        if(args.length == 1){
+            hostname = args[0];
+        }
+        
+        else if(args.length == 2){
+            hostname = args[0];
+            portnumber = Integer.parseInt(args[1]);
+        }
+
         try{      
-            Socket s=new Socket("localhost",47201);  
+            Socket s=new Socket(hostname,portnumber);  
             DataOutputStream dout=new DataOutputStream(s.getOutputStream());
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(s.getInputStream()));
             String str;
