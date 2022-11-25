@@ -10,6 +10,7 @@
 
 
 #define PORTNUMBER  47200
+#define N_THREADS       5 
 
 void* handler(void* args);
 
@@ -21,7 +22,7 @@ int main(int argc, char* argv[])
     socklen_t addr_len;
     struct sockaddr_in name;
     
-    pthread_t handler_thread;
+    pthread_t handler_thread[N_THREADS];
     pthread_create(&handler_thread, NULL, handler, NULL);
     pthread_join(handler_thread, NULL);
 
@@ -64,13 +65,6 @@ int main(int argc, char* argv[])
     exit(0);
     
 }
-
-
-
-int pthread_create(pthread_t *restrict thread, const pthread_attr_t *restrict attr,
-                          void *(*start_routine)(void *),
-                          void *restrict arg);
-
 
 void* handler(void* arg){
     printf("Soy un PeHilo\n");
