@@ -7,7 +7,7 @@ all: recuento acumulador
 
 
 acumulador: acumulador.o
-	$(CC) $(CFLAG) acumulador.o -o acumulador -lrt 
+	$(CC) $(CFLAG) acumulador.o -o acumulador -lrt -lpthread
 
 acumulador.o: acumulador.c
 	$(CC) $(CFLAG) -c acumulador.c

@@ -30,10 +30,30 @@ int send_vote(int __fd, const void* __buf, ssize_t __n, int __flags){
 }
 */
 
+void flag(){
+    printf("flag\n");
+}
 
+void err_exit(const char* msg){
+    printf("Error: %s\n", msg);
+    exit(1);
+}
+
+void err_usage(const char* msg){
+    printf("Usage: %s\n", msg);
+}
+
+int input_len(const char* input){
+    int i = 0; 
+    while(input[i] != '\n'){
+        i++;
+    }
+    return i;
+}
 int main(int argc, char * argv[])
 {
-    int n, s, len; 
+    int n, s, len;
+    char inputchar;
     char buf[1024];
     char hostname[64];
     unsigned int portnumber = 47200;
@@ -57,6 +77,9 @@ int main(int argc, char * argv[])
     }
     
     hp = gethostbyname(hostname);
+    if(hp == NULL){
+        err_exit("get host failed");
+    }
 
     s = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -64,15 +87,28 @@ int main(int argc, char * argv[])
     name.sin_port = htons(portnumber);
 
     memcpy(&name.sin_addr, hp->h_addr_list[0], hp->h_length);
+
     len = sizeof(struct sockaddr_in);
 
     connect(s, (struct sockaddr *) &name, len);
 
+
     while ((n = read(0, buf, sizeof(buf))) > 0) {
-        if (send(s, buf, n, 0) < 0) {
-            perror("send");
-            exit(1);
+        if(input_len(buf)==1){
+            inputchar = buf[0];
+            if(inputchar == 'a' || inputchar == 'b'){
+                if (send(s, buf, n, 0) < 0) {
+                    err_exit("send failed");
+                }    
+            }
+            else if(inputchar == 'f'){
+                break;
+            }            
+            else{
+                err_usage("caracteres validos {a, b, f}");
+            }
         }
+        else(err_usage("escriba solo un caracter como input."));
     }
 
     close(s);
