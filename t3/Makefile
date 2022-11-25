@@ -3,7 +3,7 @@ JAVAC=javac
 CFLAG=-g -Werror -Wextra
 
 
-all: recuento acumulador
+all: recuento acumulador visualizador
 
 
 acumulador: acumulador.o
@@ -19,7 +19,8 @@ recuento: recuento.o
 recuento.o: recuento.c
 	$(CC) $(CFLAG) -c recuento.c
 
-
+visualizador: visualizador.java
+	$(JAVAC) visualizador.java
 
 
 clear:

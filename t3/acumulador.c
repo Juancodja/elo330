@@ -43,21 +43,13 @@ pthread_mutex_t lock;
 
 int main(int argc, char* argv[])
 {
-    char buf[10];
     int s, client_socket;
     unsigned int portnumber;
-    socklen_t addr_len;
-    struct sockaddr_in name;
     
     pthread_t voteloop_thread, visloop_thread;
 
     struct vote_count votes;
-    struct msg_handler_args args;
-
-    votes.a = 0; 
-    votes.b = 0;
-
-    args.votes = &votes;
+    struct loop_args args;
 
     switch (argc)
     {
@@ -70,6 +62,12 @@ int main(int argc, char* argv[])
     default:
         break;
     }
+
+    votes.a = 0; 
+    votes.b = 0;
+
+    args.votes = &votes;
+    args.portnumber = portnumber;
 
     pthread_create(&voteloop_thread, NULL, vote_loop, (void *)& args);
     pthread_create(&visloop_thread, NULL, vis_loop, (void *)&args);
@@ -108,7 +106,7 @@ void* vote_loop(void* args){
     if(listen(s, 5)){
 		err_exit("listed failed");
     };
-
+    printf("Listen Votes in port: %i\n", portnumber);
     for( ; ; ){
         fflush(stdout);
         client_socket = accept(s, (struct sockaddr *)&name, &addr_len);
@@ -142,14 +140,13 @@ void* vis_loop(void* args){
     name.sin_port = htons(portnumber);
     name.sin_addr.s_addr = htonl(INADDR_ANY);
     addr_len = sizeof(struct sockaddr_in);
-    printf("asdas\n");
     if( bind(s, (struct sockaddr *) &name, addr_len)){
 		err_exit("bind failed vis");
     }
     if(listen(s, 5)){
 		err_exit("listed failed");
     };
-
+    printf("Listen Visualization in port: %i\n", portnumber);
     for( ; ; ){
         fflush(stdout);
         client_socket = accept(s, (struct sockaddr *)&name, &addr_len);
@@ -199,7 +196,7 @@ void* handle_vote(void* args){
 }
 
 void* handle_visualization(void* args){
-    char buf[10];
+    char buf[64];
     char client_addr[64]; 
     int n, client_socket; 
     struct vote_count* votes;
@@ -212,7 +209,8 @@ void* handle_visualization(void* args){
 
     printf("Connection from : %s\n",client_addr);
         while ((n = recv(client_socket, buf, sizeof(buf), 0)) > 0){
-            printf("votos A: %i, votos B: %i\n", votes->a, votes->b);
+            snprintf((char *)buf, sizeof(buf), "Votos A: %i, Votos B: %i\n", votes->a, votes->b );
+            write(client_socket, (char*)buf, strlen((char*)buf));
         }
 
     printf("Connection from : %s finished\n",client_addr);
