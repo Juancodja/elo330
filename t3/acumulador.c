@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
     socklen_t addr_len;
     struct sockaddr_in name;
     
-    pthread_t handler_thread[N_THREADS];
+    pthread_t handler_thread;
     pthread_create(&handler_thread, NULL, handler, NULL);
     pthread_join(handler_thread, NULL);
 
