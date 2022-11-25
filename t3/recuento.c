@@ -8,32 +8,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-/*
-int send_vote(int __fd, const void* __buf, ssize_t __n, int __flags){
-    char votoA[1024] = "a", votoB[1024] = "b";
-    if(strcmp(__buf, votoA) == 0){
-        send(__fd, __buf, __n, __flags);
-        return 0;
-    }
-    else if(strcmp(__buf, votoB) == 0){
-        send(__fd, __buf, __n, __flags);
-        return 0;
-    }
-    else if(strcmp(__buf, "f") == 0){
-        printf("Finalizando Votación.\n");
-        return -1;
-    }
-    else{
-        printf("Voto incorrecto opciones {a, b}\n");
-        return 0;
-    }
-}
-*/
-
-void flag(){
-    printf("flag\n");
-}
-
 void err_exit(const char* msg){
     printf("Error: %s\n", msg);
     exit(1);

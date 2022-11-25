@@ -24,9 +24,16 @@ struct msg_handler_args
     char client_addr[64];
     struct vote_count* votes;
 };
+struct loop_args
+{
+    unsigned int portnumber;
+    struct vote_count* votes;
+};
 
-
+void* vote_loop(void* args);
+void* vis_loop(void* args);
 void* handle_vote(void* args);
+void* handle_visualization(void* args);
 
 void err_exit(const char* msg);
 
@@ -42,7 +49,7 @@ int main(int argc, char* argv[])
     socklen_t addr_len;
     struct sockaddr_in name;
     
-    pthread_t handler_thread;
+    pthread_t voteloop_thread, visloop_thread;
 
     struct vote_count votes;
     struct msg_handler_args args;
@@ -64,7 +71,29 @@ int main(int argc, char* argv[])
         break;
     }
 
+    pthread_create(&voteloop_thread, NULL, vote_loop, (void *)& args);
+    pthread_create(&visloop_thread, NULL, vis_loop, (void *)&args);
 
+    pthread_join(voteloop_thread, NULL);
+    pthread_join(visloop_thread, NULL);
+
+    exit(0);
+    
+}
+
+void* vote_loop(void* args){
+    unsigned int portnumber = ((struct loop_args*)args)->portnumber;
+    char buf[10];
+    int s, client_socket;
+    pthread_t handler_thread;
+    socklen_t addr_len;
+
+    struct sockaddr_in name;
+    
+    struct vote_count votes;
+    struct msg_handler_args hand_args;
+
+    hand_args.votes = ((struct loop_args*)args)->votes;
 
     s = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -74,7 +103,7 @@ int main(int argc, char* argv[])
     addr_len = sizeof(struct sockaddr_in);
 
     if( bind(s, (struct sockaddr *) &name, addr_len)){
-		err_exit("bind failed");
+		err_exit("bind failed vote");
     }
     if(listen(s, 5)){
 		err_exit("listed failed");
@@ -83,16 +112,57 @@ int main(int argc, char* argv[])
     for( ; ; ){
         fflush(stdout);
         client_socket = accept(s, (struct sockaddr *)&name, &addr_len);
-        strcpy(args.client_addr,inet_ntoa(name.sin_addr));
-        args.client_socket = client_socket;
-        pthread_create(&handler_thread, NULL, handle_vote, (void *)&args);
+        strcpy(hand_args.client_addr,inet_ntoa(name.sin_addr));
+        hand_args.client_socket = client_socket;
+        pthread_create(&handler_thread, NULL, handle_vote, (void *)&hand_args);
 
     }
-    close(client_socket);
     close(s);
-    exit(0);
-    
+    return NULL; 
+
 }
+
+void* vis_loop(void* args){
+    unsigned int portnumber = ((struct loop_args*)args)->portnumber + 1;
+    char buf[10];
+    int s, client_socket;
+    pthread_t handler_thread;
+    socklen_t addr_len;
+
+    struct sockaddr_in name;
+    
+    struct vote_count votes;
+    struct msg_handler_args hand_args;
+
+    hand_args.votes = ((struct loop_args*)args)->votes;
+
+    s = socket(AF_INET, SOCK_STREAM, 0);
+
+    name.sin_family = AF_INET;
+    name.sin_port = htons(portnumber);
+    name.sin_addr.s_addr = htonl(INADDR_ANY);
+    addr_len = sizeof(struct sockaddr_in);
+    printf("asdas\n");
+    if( bind(s, (struct sockaddr *) &name, addr_len)){
+		err_exit("bind failed vis");
+    }
+    if(listen(s, 5)){
+		err_exit("listed failed");
+    };
+
+    for( ; ; ){
+        fflush(stdout);
+        client_socket = accept(s, (struct sockaddr *)&name, &addr_len);
+        strcpy(hand_args.client_addr,inet_ntoa(name.sin_addr));
+        hand_args.client_socket = client_socket;
+        pthread_create(&handler_thread, NULL, handle_visualization, (void *)&hand_args);
+
+    }
+    close(s);
+
+    return NULL; 
+}
+
 
 
 void* handle_vote(void* args){
@@ -128,7 +198,31 @@ void* handle_vote(void* args){
     return (void *) NULL;
 }
 
+void* handle_visualization(void* args){
+    char buf[10];
+    char client_addr[64]; 
+    int n, client_socket; 
+    struct vote_count* votes;
+
+    strcpy(client_addr, ((struct msg_handler_args*)args)->client_addr);
+    client_socket = ((struct msg_handler_args*)args)->client_socket; 
+    votes = ((struct msg_handler_args*)args)->votes; 
+    
+    
+
+    printf("Connection from : %s\n",client_addr);
+        while ((n = recv(client_socket, buf, sizeof(buf), 0)) > 0){
+            printf("votos A: %i, votos B: %i\n", votes->a, votes->b);
+        }
+
+    printf("Connection from : %s finished\n",client_addr);
+    close(client_socket);
+    return (void *) NULL;
+}
+
 void err_exit(const char* msg){
     printf("Error: %s\n", msg);
     exit(1);
 }
+
+
