@@ -27,8 +27,7 @@ window.addEventListener('keydown', (e)=>{
 
 })
 
-funtion vuelta(objt){
+function vuelta(objt){
     var x = parseInt(objt.style.left);
     var y = parseInt(objt.style.top);
-
 }
