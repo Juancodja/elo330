@@ -13,6 +13,7 @@
 #define MAX_HEIGHT 700
 #define MAX_WIDTH 1200
 #define MAX_COLOR 255
+#define SEND_SIZE 1024
 
 
 
@@ -38,9 +39,11 @@ extern player_entity playerArr[MAX_PLAYERS];
 #define FILESHEADER
 
 /* Files to store and send info */
-extern FILE *playersFile;
+extern FILE *playersFileW;
 extern FILE *bulletsFile;
+extern FILE *playersFileR;
 
+FILE *open_p_for_read(void);
 int openfiles(void);
 int writePlayerInfo(int);
 int beginPlayerInfo(void);

@@ -1,16 +1,18 @@
 #include "serverlib.h"
 
 /* Files to store and send info */
-FILE *playersFile;
+FILE *playersFileW;
 FILE *bulletsFile;
+FILE *playersFileR;
+
+const char pFileName[] = "players.json\0";
+const char bFileName[] = "bullets.json\0";
 
 int openfiles(void){
-    const char pFileName[] = "players.json\0";
-    const char bFileName[] = "bullets.json\0";
-    playersFile = fopen(pFileName, "wb");
+    playersFileW = fopen(pFileName, "wb");
     bulletsFile = fopen(bFileName, "wb");
 
-    if(playersFile == NULL || bulletsFile == NULL){
+    if(playersFileW == NULL || bulletsFile == NULL){
         perror("fopen");
         return -1;
     }
@@ -19,7 +21,7 @@ int openfiles(void){
 
 
 int beginPlayerInfo(void){
-    if(fprintf(playersFile, "{\n\t\"Players\": [") < 0){
+    if(fprintf(playersFileW, "{\n\t\"Players\": [") < 0){
         perror("beginig player file");
         return -1;
     }
@@ -27,7 +29,7 @@ int beginPlayerInfo(void){
 }
 
 int writePlayerInfo(int id){
-    if(fprintf(playersFile, "\n\t\t{\"name\": \"%s\", \"posX\": %i, \"posY\": %i, \"R\": %i, \"G\": %i, \"B\": %i, \"alive\": %i},", playerArr[id].name,
+    if(fprintf(playersFileW, "\n\t\t{\"name\": \"%s\", \"posX\": %i, \"posY\": %i, \"R\": %i, \"G\": %i, \"B\": %i, \"alive\": %i},", playerArr[id].name,
     playerArr[id].posX, playerArr[id].posY, playerArr[id].color[0],
     playerArr[id].color[1], playerArr[id].color[2], playerArr[id].alive) < 0){
         perror("writing player info");
@@ -38,11 +40,18 @@ int writePlayerInfo(int id){
 
 int endPlayerInfo(void){
 
-    if(fprintf(playersFile, "\n\t]\n}") < 0){
+    if(fprintf(playersFileW, "\n\t]\n}\n") < 0){
         perror("ending player info");
         return -1;
     }
     return 0;
 }
 
+FILE *open_p_for_read(){
+    playersFileR = fopen(pFileName, "rb");
 
+    if(playersFileR == NULL){
+        perror("fopen");
+    }
+    return playersFileR;
+}

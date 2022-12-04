@@ -56,9 +56,9 @@ void *connected_player(void* param){
         sem_wait(playerSem);
         send_Pinfo(sock_player);
         sem_post(playerSem);
-        printf("nombre: %s\nposX: %i\nposY: %i\nactivo: %i\nR: %i\nG: %i\n B: %i\n", playerArr[i].name,
+/*        printf("nombre: %s\nposX: %i\nposY: %i\nactivo: %i\nR: %i\nG: %i\n B: %i\n", playerArr[i].name,
         playerArr[i].posX, playerArr[i].posY, playerArr[i].active, playerArr[i].color[0],
-        playerArr[i].color[1], playerArr[i].color[2]);
+        playerArr[i].color[1], playerArr[i].color[2]);  */
     }
 
 }
@@ -119,12 +119,12 @@ int main(int argc, char *argv[]){
             }
         }
         if(writtenPinfo)                         /* if player info was written */
-            fseek(playersFile, -1, SEEK_CUR);    /* deletes comma */
+            fseek(playersFileW, -1, SEEK_CUR);    /* deletes comma */
         if(endPlayerInfo() != 0){
             printf("revisar este exit\n");
             exit(1);
         }
-        fseek(playersFile, off, SEEK_SET);      /* resets file pointer */
+        fseek(playersFileW, off, SEEK_SET);      /* resets file pointer */
         sem_post(playerSem);
     }
 
@@ -211,7 +211,22 @@ void *server(void *param){
 
 
 void send_Pinfo(int s){         /* seccion critica */
-    int fd = fileno(playersFile);
-    write(s, playersFile, 500);
+    FILE *playersRead;
+    char data[SEND_SIZE];
+
+    if((playersRead = open_p_for_read()) == NULL){
+        exit(1);
+    }
+    
+    while(fgets(data, SEND_SIZE, playersRead) != NULL) {
+        if (send(s, data, sizeof(data), 0) == -1) {
+            perror("[-]Error in sending file.");
+            exit(1);
+        }
+        printf("%s", data);
+        bzero(data, SEND_SIZE);
+    }
+    //write(s, playersRead, 500);
+
     return;
 }
