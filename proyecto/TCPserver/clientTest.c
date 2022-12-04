@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#define SIZE 1024
 
 int main(int argc, char *argv[]){
 
@@ -14,7 +15,7 @@ int main(int argc, char *argv[]){
        exit(1);
     }
 
-    char hostname[64], port[6], buff[200];
+    char hostname[64], port[6], buff[SIZE];
     int s;
     char A = 'A', B = 'B';
 
@@ -53,8 +54,9 @@ int main(int argc, char *argv[]){
         exit(1);
     }
 
-    while(recv(s, (void *)buff, sizeof(buff), 0)){
-        write(STDIN_FILENO, buff, sizeof(buff));
+    while(recv(s, (void *)buff, SIZE, 0)){
+        //write(STDIN_FILENO, buff, sizeof(buff));
+        printf("%s", buff);
     }
     close(s);
     exit(0);
