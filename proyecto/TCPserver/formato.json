@@ -1,0 +1,7 @@
+{
+    "Players": [
+        {"name": "P1", "posX": 1, "posY": 2, "R": 0, "G": 0, "B": 0, "alive": 1},
+        {"name": "P2", "posX": 1, "posY": 2, "R": 0, "G": 0, "B": 0, "alive": 1},
+        {"name": "P1", "posX": 1, "posY": 2, "R": 0, "G": 0, "B": 0, "alive": 1}
+    ]
+}
