@@ -1,5 +1,5 @@
 #include "serverlib.h"
-#define DELAY 100000
+#define DELAY 10
 
 /*
     Main thread processes game
@@ -36,7 +36,7 @@ void *connected_player(void* param){
         if(playerArr[i].active == 1) continue;
 
         printf("Asigned player number\n");
-        sprintf(playerArr[i].name, "Player%i\0", i);
+        sprintf(playerArr[i].name, "Player%i", i);
         playerArr[i].posX = 200;
         playerArr[i].posY = 200;
         for(k = 0 ; k < 3 ; k++){
@@ -227,6 +227,6 @@ void send_Pinfo(int s){         /* seccion critica */
         bzero(data, SEND_SIZE);
     }
     //write(s, playersRead, 500);
-
+    fclose(playersRead);
     return;
-}
+}   

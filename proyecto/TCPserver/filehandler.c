@@ -5,8 +5,8 @@ FILE *playersFileW;
 FILE *bulletsFile;
 FILE *playersFileR;
 
-const char pFileName[] = "players.json\0";
-const char bFileName[] = "bullets.json\0";
+const char pFileName[] = "players.json";
+const char bFileName[] = "bullets.json";
 
 int openfiles(void){
     playersFileW = fopen(pFileName, "wb");

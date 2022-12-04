@@ -45,6 +45,7 @@ extern FILE *playersFileR;
 
 FILE *open_p_for_read(void);
 int openfiles(void);
+int endPlayerInfo(void);
 int writePlayerInfo(int);
 int beginPlayerInfo(void);
 
