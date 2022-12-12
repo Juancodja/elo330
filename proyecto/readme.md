@@ -28,4 +28,17 @@ jugador x up
 
 {bala: (xf - xi, yf - yi)}
 
-#define 
+
+### Carateristicas Juego
+
+1920x1080
+
+pantalla 1400x800
+tablero  1000x600
+
+jugador 20x20
+balas   10x10
+
+Logica muerte, 
+- cambiar el bit alive a 0
+- 5s tiempo respawn
