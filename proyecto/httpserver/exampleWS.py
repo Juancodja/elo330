@@ -5,7 +5,29 @@ import json
 from random import randint
 from time import sleep
 
-def random_shiet(players):
+gameData = {"players":[
+                {
+                    "name": "Player0",
+                    "posX": 0,
+                    "posY": 0,
+                    "R": 255, 
+                    "G": 255, 
+                    "B": 255, 
+                    "alive": 1
+                }
+            ],
+            "bullets":[
+                {
+                    "posX": 0,
+                    "posY": 0,
+                    "velX": 0,
+                    "velY": 0,
+                }
+            ]
+}
+
+
+def random_shiet(gameData):
     r = randint(0, 255)
     g = randint(0, 255)
     b = randint(0, 255)
@@ -13,30 +35,38 @@ def random_shiet(players):
     posX = randint(100, 500)
     posY = randint(100, 500)
 
-    players["Players"][0]["posX"] = posX
-    players["Players"][0]["posY"] = posY
+    gameData["Players"][0]["posX"] = posX
+    gameData["Players"][0]["posY"] = posY
 
-    players["Players"][0]["R"] = r
-    players["Players"][0]["G"] = g
-    players["Players"][0]["B"] = b
+    gameData["Players"][0]["R"] = r
+    gameData["Players"][0]["G"] = g
+    gameData["Players"][0]["B"] = b
 
-    return players
+    return gameData
 
 
-def move(message, players):
+def move(message, gameData):
+    playerName = message["move"]["name"]
     dir = message["move"]["dir"]
+    i = 0
     playerInd = 0
+
+    for player in gameData["Players"]: 
+        if player["name"] == playerName:
+            playerInd = i
+        i = i +1
+
     delta = 5
     if dir == "D":
-        players["Players"][playerInd]["posY"] += delta
+        gameData["Players"][playerInd]["posY"] += delta
     if dir == "U":
-        players["Players"][playerInd]["posY"] -= delta
+        gameData["Players"][playerInd]["posY"] -= delta
     if dir == "L":
-        players["Players"][playerInd]["posX"] -= delta
+        gameData["Players"][playerInd]["posX"] -= delta
     if dir == "R":
-        players["Players"][playerInd]["posX"] += delta
+        gameData["Players"][playerInd]["posX"] += delta
 
-    print(players)
+    print(gameData)
     print(f"Move: {dir} ")
 
 
@@ -45,27 +75,28 @@ def shoot(message, players):
     shoot = message["shoot"]
     print(shoot)
 
-def saveState(players):
+def saveState(gameData):
     with open('players.json', 'w') as outfile:
-        json.dump(players, outfile)
+        json.dump(gameData, outfile)
 
 def messageHandler(message):
     print(message)
     message = json.loads(message)
     with open('players.json') as user_file:
-        players = json.load(user_file)
-    
-    if 'move' in message.keys():
-        move(message, players)
+        gameData = json.load(user_file)
+
+    if 'refresh' in message.keys():
+        pass
+    elif 'move' in message.keys():
+        move(message, gameData)
     elif 'shoot' in message.keys():
-        shoot(message, players)
+        shoot(message, gameData)
     else:
         pass
     
-    saveState(players)
+    saveState(gameData)
 
-    response = json.dumps(players)
-
+    response = json.dumps(gameData)
 
     return response
 
@@ -77,15 +108,6 @@ async def handler(websocket):
         await websocket.send(response)
     
 
-async def echo(websocket):
-    async for message in websocket:
-        with open('players.json') as user_file:
-            parsed_json = json.load(user_file)
-        random_shiet(parsed_json)
-        message = json.dumps(parsed_json)
-        await websocket.send(message)
-        print("asda")
-
 
 
 async def main():
@@ -93,3 +115,6 @@ async def main():
         await asyncio.Future()  # run forever
 
 asyncio.run(main())
+
+
+
