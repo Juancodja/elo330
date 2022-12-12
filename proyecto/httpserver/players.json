@@ -1,0 +1,13 @@
+{   "Players": [
+        {"name": "Player0", "posX": 240, "posY": 160, "R": 20, "G": 20, "B": 20, "alive": 1}, 
+        {"name": "Player1", "posX": 255, "posY": 405, "R": 20, "G": 20, "B": 20, "alive": 1}, 
+        {"name": "Player2", "posX": 280, "posY": 205, "R": 20, "G": 20, "B": 20, "alive": 1},
+        {"name": "Player3", "posX": 280, "posY": 205, "R": 20, "G": 20, "B": 20, "alive": 1}
+    ],
+
+    "bullets": [
+        {"posX": 500, "posY": 400, "velX": 280, "velY": 205},
+        {"posX": 500, "posY": 400, "velX": 280, "velY": 205},
+        {"posX": 500, "posY": 400, "velX": 280, "velY": 205},
+        {"posX": 500, "posY": 700, "velX": 280, "velY": 205}
+    ]}
