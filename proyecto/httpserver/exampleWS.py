@@ -43,6 +43,13 @@ gameData = {"players":[
             ]
 }
 
+with open('players.json') as user_file:
+    gameData = json.load(user_file)
+
+CLIENTS = set()
+
+
+
 
 def random_shiet(gameData):
     r = randint(0, 255)
@@ -67,10 +74,11 @@ def move(message, gameData):
     dir = message["move"]["dir"]
     i = 0
     playerInd = 0
-
+    
     for player in gameData["Players"]: 
         if player["name"] == playerName:
             playerInd = i
+            break
         i = i +1
 
     delta = 5
@@ -86,35 +94,45 @@ def move(message, gameData):
     print(gameData)
     print(f"Move: {dir} ")
 
+def getPlayerPos(playerName):
+    for player in gameData["Players"]:
+        if player["name"] == playerName:
+            return player["posX"], player["posY"] 
 
+def computeSpeed(xi, xf, yi, yf):
+    x = xf-xi
+    y = yf-yi
+    h = (x**2 + y**2+2)**(1/2)
 
-def shoot(message, players):
+    velX = 40*x/h
+    velY = 40*y/h
+    
+    return int(velX), int(velY)
+
+def shoot(message):
     shoot = message["shoot"]
-    print(shoot)
+    xMouse = shoot["mouseX"]
+    yMouse = shoot["mouseY"]
+    xPlayer, yPlayer  = getPlayerPos(shoot["name"])
 
-def saveState(gameData):
-    with open('players.json', 'w') as outfile:
-        json.dump(gameData, outfile)
+    velX, velY = computeSpeed(xPlayer, xPlayer, xMouse , yMouse)
+
+    bullet = {"posX": xPlayer + velX, "posY": yPlayer + velY, "velX": velX ,"velY": velY}
+    
+    gameData["bullets"].append(bullet)
+    print(bullet)
 
 def messageHandler(message):
-    print(message)
     message = json.loads(message)
-    with open('players.json') as user_file:
-        gameData = json.load(user_file)
 
-    if 'refresh' in message.keys():
-        pass
-    elif 'move' in message.keys():
+    if 'move' in message.keys():
         move(message, gameData)
     elif 'shoot' in message.keys():
-        shoot(message, gameData)
+        shoot(message)
     else:
         pass
-    
-    saveState(gameData)
 
     response = json.dumps(gameData)
-
     return response
 
 
