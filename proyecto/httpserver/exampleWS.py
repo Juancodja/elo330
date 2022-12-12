@@ -1,9 +1,26 @@
 import asyncio
 import websockets
 import json
+import threading
 
 from random import randint
 from time import sleep
+
+data_lock = threading.Lock()
+
+## bullet update time delta
+delta = 1/50
+
+## player respawn time
+respawn = 5
+
+## board
+height = 1400
+width = 800
+
+## bullets
+bullet_size = 5
+player_size = 20
 
 gameData = {"players":[
                 {
@@ -117,4 +134,48 @@ async def main():
 asyncio.run(main())
 
 
+class CPU(threading.Thread):
+    def run():
+        bulletHandler()
 
+
+def bulletHandler():
+    while(1):
+        with data_lock:
+            for bullet in gameData["bullets"]:
+                bullet["posX"] = bullet["posX"] + bullet["velX"]
+                bullet["posY"] = bullet["posY"] + bullet["velY"]
+                if bullet["posX"] not in range(0, height):
+                    gameData.pop(bullet)
+                elif bullet["posY"] not in range(0, width):
+                    gameData.pop[bullet]
+                for player in gameData["players"]:
+                    if (bullet["posX"] in range(player["posX"] - player_size, player["posX"] + player_size - 1) 
+                        and bullet["posY"] in range(player["posY"] - player_size, player["posY"] + player_size - 1)):
+                        if player["alive"] == 1:
+                            player_kill(player)
+                            bullet.pop
+                            break
+        sleep(delta)
+
+
+
+class death_handler(threading.Thread):      ## debe aceptar argumento jugador del dict
+    def __init__(self, player):
+        super().__init__()
+        self.player = player
+
+    def run(self):
+        sleep(respawn)
+        with data_lock:
+            try:
+                self.player["alive"] = 1
+            finally:
+                pass
+        return
+
+
+def player_kill(player):
+    player["alive"] = 0
+    death_handler(player).run()
+    return
