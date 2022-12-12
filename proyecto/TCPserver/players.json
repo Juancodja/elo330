@@ -1,4 +1,4 @@
-{
-	"Players": 
+{ "Players": [
+		{"name": "Player0", "posX": 220, "posY": 220, "R": 20, "G": 20, "B": 20, "alive": 1}
 	]
 }

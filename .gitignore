@@ -7,3 +7,5 @@ pfifo
 cfifo 
 mshmem
 pshmem
+*.out
+ignore*
