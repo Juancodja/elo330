@@ -2,8 +2,6 @@ import asyncio
 import websockets
 import json
 import threading
-
-from random import randint
 from time import sleep
 from math import sqrt
 
@@ -49,26 +47,6 @@ with open('players.json') as user_file:
     gameData = json.load(user_file)
 
 CLIENTS = set()
-
-
-
-
-def random_shiet(gameData):
-    r = randint(0, 255)
-    g = randint(0, 255)
-    b = randint(0, 255)
-
-    posX = randint(100, 500)
-    posY = randint(100, 500)
-
-    gameData["Players"][0]["posX"] = posX
-    gameData["Players"][0]["posY"] = posY
-
-    gameData["Players"][0]["R"] = r
-    gameData["Players"][0]["G"] = g
-    gameData["Players"][0]["B"] = b
-
-    return gameData
 
 
 def move(message, gameData):
