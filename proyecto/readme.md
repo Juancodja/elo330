@@ -1,44 +1,13 @@
 # Proyecto ELO330
 
-## Tablero
+## Juego simple con comunicación IPC
 
-- Ancho pantalla 1200x700
-- Ancho plataforma 1000x500
+Todo el programa está escrito en lenguaje de alto nivel no compilado, la petición del cliente se debe hacer al puerto
+configurado en main.py a través de un mensaje http, luego la comunicación de la app devuelta y el servidor está configurada
+en un puerto específico.
 
-
-Enviar por socket TCP archivo json
-
-
-Lo que envia TCP :
-
-{   
-    jugadores:{nombre_jugador: {
-        pos x: int,
-        pos y: int,
-        color: [r,g,b]
-    }
-    {balas: [pos , pos...]}
-}
-
-
-Lo que recibe TCP:
-
-bala desde hacia
-jugador x up
-
-{bala: (xf - xi, yf - yi)}
-
-
-### Carateristicas Juego
-
-1920x1080
-
-pantalla 1400x800
-tablero  1000x600
-
-jugador 20x20
-balas   10x10
-
-Logica muerte, 
-- cambiar el bit alive a 0
-- 5s tiempo respawn
+Contenido:
+- main.py
+- exampleWE.py
+- script.js
+- style.css
