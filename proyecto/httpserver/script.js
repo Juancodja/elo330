@@ -19,7 +19,7 @@ socket.addEventListener("open", e => {
 });
 
 socket.onmessage = ({ data }) => {
-    console.log('Message from server', data);
+    console.debug('Message from server', data);
     let gameData = JSON.parse(data);
 
     draw(gameData);
@@ -41,6 +41,7 @@ window.addEventListener('click', (e)=>{
     }
     shoot.shoot.mouseX = e.clientX;
     shoot.shoot.mouseY = e.clientY;
+    console.log(JSON.stringify(shoot))
     socket.send(JSON.stringify(shoot))
 })
 
@@ -66,6 +67,20 @@ function move(e){
         case 'ArrowDown':
             dir = "D"
             break;
+
+        case 'a':
+            dir = "L"
+            break;
+        case 'd':
+            dir = "R"
+            break;
+        case 'w':
+            dir = "U"
+            break;
+        case 's':
+            dir = "D"
+            break;
+
     }
     message.move.dir = dir;
     socket.send(JSON.stringify(message));
@@ -76,14 +91,16 @@ function draw(gameData){
     let players = gameData["Players"];
     let bullets = gameData["bullets"];
     context.clearRect(0, 0, canvas.width, canvas.height);
-    for(let i in players){  
-        let R = players[i].R;
-        let G = players[i].G; 
-        let B = players[i].B;
-
-        let color = '#' + R.toString(16) + G.toString(16) + B.toString(16);
-        drawPoint(context, players[i].posX, players[i].posY, players[i].name, color, PLAYERSIZE);
-
+    for(let i in players){ 
+        if(players[i].alive == 1){
+            let R = players[i].R;
+            let G = players[i].G; 
+            let B = players[i].B;
+    
+            let color = '#' + R.toString(16) + G.toString(16) + B.toString(16);
+            drawPoint(context, players[i].posX, players[i].posY, players[i].name, color, PLAYERSIZE);         
+        }
+       
     }
     for(let i in bullets){
         drawPoint(context, bullets[i].posX, bullets[i].posY, null, null, BULLETSIZE);

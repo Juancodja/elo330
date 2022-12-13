@@ -5,9 +5,11 @@ import threading
 
 from random import randint
 from time import sleep
+from math import sqrt
 
 data_lock = threading.Lock()
 
+PORT = 47201
 ## bullet update time delta
 delta = 1/50
 
@@ -83,31 +85,43 @@ def move(message, gameData):
 
     delta = 5
     if dir == "D":
-        gameData["Players"][playerInd]["posY"] += delta
+        if (gameData["Players"][playerInd]["posY"] + delta) < 0:
+            gameData["Players"][playerInd]["posY"] = 0
+        else:
+            gameData["Players"][playerInd]["posY"] += delta
     if dir == "U":
-        gameData["Players"][playerInd]["posY"] -= delta
+        if (gameData["Players"][playerInd]["posY"] - delta) > height:
+            gameData["Players"][playerInd]["posY"] = height
+        else:
+            gameData["Players"][playerInd]["posY"] -= delta
     if dir == "L":
-        gameData["Players"][playerInd]["posX"] -= delta
+        if (gameData["Players"][playerInd]["posX"] - delta) < 0:
+            gameData["Players"][playerInd]["posX"] = 0
+        else:
+            gameData["Players"][playerInd]["posX"] -= delta
     if dir == "R":
-        gameData["Players"][playerInd]["posX"] += delta
-
+        if (gameData["Players"][playerInd]["posX"] + delta) > width:
+            gameData["Players"][playerInd]["posX"] = width
+        else:
+            gameData["Players"][playerInd]["posX"] += delta
     print(gameData)
     print(f"Move: {dir} ")
 
 def getPlayerPos(playerName):
     for player in gameData["Players"]:
         if player["name"] == playerName:
-            return player["posX"], player["posY"] 
+            return (player["posX"], player["posY"])
 
-def computeSpeed(xi, xf, yi, yf):
+def computeSpeed(xi, yi, xf, yf):
     x = xf-xi
     y = yf-yi
-    h = (x**2 + y**2+2)**(1/2)
+    h = sqrt(x**2 + y**2)
 
-    velX = 40*x/h
-    velY = 40*y/h
-    
-    return int(velX), int(velY)
+    velX = 10*x/h
+    velY = 10*y/h
+    print((velX, velY))
+    print((int(velX), int(velY)))
+    return (int(velX), int(velY))
 
 def shoot(message):
     shoot = message["shoot"]
@@ -115,9 +129,9 @@ def shoot(message):
     yMouse = shoot["mouseY"]
     xPlayer, yPlayer  = getPlayerPos(shoot["name"])
 
-    velX, velY = computeSpeed(xPlayer, xPlayer, xMouse , yMouse)
+    velX, velY = computeSpeed(xPlayer, yPlayer, xMouse, yMouse)
 
-    bullet = {"posX": xPlayer + velX, "posY": yPlayer + velY, "velX": velX ,"velY": velY}
+    bullet = {"posX": xPlayer + 4*velX, "posY": yPlayer + 4*velY, "velX": velX ,"velY": velY}
     
     gameData["bullets"].append(bullet)
     print(bullet)
@@ -142,37 +156,34 @@ async def handler(websocket):
         response = messageHandler(message)
         await websocket.send(response)
     
+##############
+# GAME LOGIC #
+##############
 
-
-
-async def main():
-    async with websockets.serve(handler, "localhost", 47201):
-        await asyncio.Future()  # run forever
-
-asyncio.run(main())
-
-
-class CPU(threading.Thread):
-    def run():
+class Game(threading.Thread):
+    def run(self):
         bulletHandler()
 
 
 def bulletHandler():
     while(1):
         with data_lock:
-            for bullet in gameData["bullets"]:
+            for i, bullet in enumerate(gameData["bullets"]):
+                
                 bullet["posX"] = bullet["posX"] + bullet["velX"]
                 bullet["posY"] = bullet["posY"] + bullet["velY"]
+
                 if bullet["posX"] not in range(0, height):
-                    gameData.pop(bullet)
+                    gameData["bullets"].pop(i)
                 elif bullet["posY"] not in range(0, width):
-                    gameData.pop[bullet]
-                for player in gameData["players"]:
+                    gameData["bullets"].pop(i)
+
+                for player in gameData["Players"]:
                     if (bullet["posX"] in range(player["posX"] - player_size, player["posX"] + player_size - 1) 
                         and bullet["posY"] in range(player["posY"] - player_size, player["posY"] + player_size - 1)):
                         if player["alive"] == 1:
                             player_kill(player)
-                            bullet.pop
+                            gameData["bullets"].pop(i)
                             break
         sleep(delta)
 
@@ -195,5 +206,20 @@ class death_handler(threading.Thread):      ## debe aceptar argumento jugador de
 
 def player_kill(player):
     player["alive"] = 0
-    death_handler(player).run()
+    death_handler(player).start()
     return
+
+
+### Main
+
+
+
+async def main():
+    game = Game()
+    game.start()
+    async with websockets.serve(handler, "localhost", PORT):
+        await asyncio.Future()  # run forever
+
+asyncio.run(main())
+
+
